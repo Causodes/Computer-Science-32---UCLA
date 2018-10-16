@@ -1,0 +1,341 @@
+1. Starting with Actor.h, here are the following public member functions of the classes:
+
+	Actor:
+		Actor(int imageID, double startX, double startY, int startDirection, double size, int depth, StudentWorld* world);
+			This function is the constructor for Actor, my base class for all other actors. It is derived from GraphObject, and in its arguments I chose to include:
+				imageID, as every actor has an associated imageID
+				startX, as every actor has an x position
+				startY, as every actor in the game has a y position
+				startDirection, as every actor has a direction
+				size, as every actor has a size
+				depth, as every actor has a depth
+				world, as every actor may have the need to reference the StudentWorld that it is in
+		virtual ~Actor();
+			This function is the destructor for Actor, and it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething() = 0;
+			This function causes the actor to perform an action during a tick. It is pure virtual as all derived classes will do different things during a given tick.
+		virtual int getIID() = 0;
+			This function returns the associated imageID of an actor, used to identify a given actor inside a vector within StudentWorld. It is pure virtual as all derived classes have different associated imageIDs.
+		virtual bool takeDamage(int type);
+			This function causes a given actor to suffer damage based on the type of collision, identified by the argument type, and returns true or false depending on whether the actor is "killed". It is virtual as while some actors have the ability to suffer damage in specific manners, most cannot. Therefore, in the base class Actor, this function only returns false, and undergoes polymorphism in the classes where the actor can suffer damage.
+		bool isAlive();
+			This function returns whether the given actor is alive. It is not virtual as all derived classes will behave in the exact same manner: return true if alive, return false otherwise.
+		void setAlive();
+			This mutator sets the state of the given actor to alive. It is not virtual as all derived classes will behave in the exact same manner.
+		void setDead();
+			This mutator sets the state of the given actor to dead. It is not virtual as all derived classes will behave in the exact same manner.
+		void setWorld(StudentWorld* world);
+			This mutator sets the private member variable StudentWorld* m_world to point at world. It is not virtual as all derived classes will behave in the exact same manner.
+		StudentWorld* getWorld();
+			This function returns the pointer to the StudentWorld that the actor is in. It is not virtual as all derived classes will behave in the exact same manner.
+			
+	Alien:
+		Alien(int imageID, int health, int level, StudentWorld* world);
+			This function is the constructor for Alien, my base class for the three alien types. It is derived from Actor, and in its arguments I chose to include:
+				imageID, as every alien type has a different associated imageID
+				health, as every alien type has a different associated health based on level
+				level, to determine health for the alien
+				world, so as to be able to call public member functions in StudentWorld
+		virtual ~Alien();
+			This function is the destructor for Alien; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething() = 0;
+			This function causes the alien to perform an action during a tick. It is pure virtual as all derived classes will do different things during a given tick.
+		virtual int getIID() = 0;
+			This function returns the associated imageID of an alien, used to identify a given actor inside a vector within StudentWorld. It is pure virtual as all derived classes have different associated imageIDs.
+		virtual bool takeDamage(int type);
+			This function causes a given alien to suffer damage in a specific manner depending on damage type. It is virtual as it is derived from the base class Actor, and has undergone polymorphism to account for the ways a given Alien type can suffer damage. It is not present in the subclasses as all the aliens suffer damage in the same manner.
+		void setPath(int direction, int length, double speed);
+			This mutator sets the direction (-1 = down and left, 0 = straight left, 1 = up and left), length, and speed of travel for a given Alien. It is not virtual as all derived classes have the same three private variables which will be used to perform the same calculations.
+		void decrementPlan();
+			This mutator decrements the length of the path by 1. It is not virtual as all derived classes will call on this function to perform to same calculations.
+		double getSpeed();
+			This function returns the speed of the Alien. It is not virtual as all derived classes will call on this function to perform to same calculations.
+		int getPlan();
+			This function returns the length of the flightplan of the Alien. It is not virtual as all derived classes will call on this function to perform to same calculations.
+		int getDirection();
+			This function returns the direction of the Alien. It is not virtual as all derived classes will call on this function to perform to same calculations.
+		int getLevel();
+			This function returns the level of the Alien. It is not virtual as all derived classes will call on this function to perform to same calculations.
+			
+	Projectile:
+		Projectile(int imageID, double x_start, double y_start, StudentWorld* world);
+			This function is the constructor for Projectile, my base class for the three projectile types. It is derived from Actor, and in its arguments I chose to include:
+				imageID, as every projectile type has a different associated imageID
+				x_start, as every projectile starts at a given input position
+				y_start, as every projectile starts at a given input position
+				world, so as to be able to call public member functions in StudentWorld
+		virtual ~Projectile();
+			This function is the destructor for Projectile; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething() = 0;
+			This function causes the projectile to perform an action during a tick. It is pure virtual as all derived classes will do different things during a given tick.
+		virtual int getIID() = 0;
+			This function returns the associated imageID of a projectile, used to identify a given actor inside a vector within StudentWorld. It is pure virtual as all derived classes have different associated imageIDs.
+			
+	Drop:
+		Drop(int imageID, double x_start, double y_start, StudentWorld* world);
+			This function is the constructor for Drop, my base class for the three goodie drop types. It is derived from Actor, and in its arguments I chose to include:
+				imageID, as every drop type has a different associated imageID
+				x_start, as every drop starts at a given input position
+				y_start, as every drop starts at a given input position
+				world, so as to be able to call public member functions in StudentWorld
+		virtual ~Drop();
+			This function is the destructor for Drop; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething();
+			This function causes the drop to perform an action during a given tick. As all drops behave in the same manner during a given tick, it is virtual.
+		virtual int getIID() = 0;
+			This function returns the associated imageID of a drop, used to identify a given actor inside a vector within StudentWorld. It is pure virtual as all derived classes have different associated imageIDs.
+			
+	Smallgon:
+		Smallgon(int level,	StudentWorld* world);
+			This function is the constructor for Smallgon, one of the three Alien types. It is derived from Alien, and in its arguments I chose to include:
+				level, to pass as an argument to Alien so as to be able to determine the health of the Smallgon
+				world, so as to be able to call public member function in StudentWorld.
+		virtual ~Smallgon();
+			This function is the destructor for Smallgon; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething();
+			This function performs the actions and checks of a Smallgon during a given tick, including checking for if it is dead, off the screen, shooting a Turnip projectile at the player if it is possible, and determining/moving the Smallgon per its flightpath. The function is virtual as it is derived from the base class Alien.
+		virtual int getIID();
+			This function returns the imageID of Smallgon, being IID_SMALLGON. It is virtual as it is derived from the base class Alien.
+			
+	Smoregon:
+		Smoregon(int level, StudentWorld* world);
+			This function is the constructor for Smoregon, one of the three Alien types. It is derived from Alien, and in its arguments I chose to include:
+				level, to pass as an argument to Alien so as to be able to determine the health of the Smoregon
+				world, so as to be able to call public member function in StudentWorld.
+		virtual ~Smoregon();
+			This function is the destructor for Smoregon; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething();
+			This function performs the actions and checks of a Smoregon during a given tick, including checking for if it is dead, off the screen, shooting a Turnip projectile at the player if it is possible, attempting to ram the player if possible, and determining/moving the Smoregon per its flightpath. The function is virtual as it is derived from the base class Alien.
+		virtual int getIID();
+			This function returns the imageID of Smoregon, being IID_SMOREGON. It is virtual as it is derived from the base class Alien.
+		
+	Snagglegon:
+		Snagglegon(int level, StudentWorld* world);
+			This function is the constructor for Snagglegon, one of the three Alien types. It is derived from Alien, and in its arguments I chose to include:
+				level, to pass as an argument to Alien so as to be able to determine the health of the Snagglegon
+				world, so as to be able to call public member function in StudentWorld.
+		virtual ~Snagglegon();
+			This function is the destructor for Snagglegon; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething();
+			This function performs the actions and checks of a Snagglegon during a given tick, including checking for if it is dead, off the screen, shooting a FlatulanTorpedo projectile at the player if it is possible, and determining/moving the Snagglegon per its flightpath. The function is virtual as it is derived from the base class Alien.
+		virtual int getIID();
+			This function returns the imageID of Snagglegon, being IID_SNAGGLEGON. It is virtual as it is derived from the base class Alien.
+	
+	Cabbage:
+		Cabbage(double x_start, double y_start, StudentWorld* world);
+			This function is the constructor for Cabbage, one of the three Projectile types. It is derived from Projectile, and in its arguments I chose to include:
+				x_start, so as to be able to create the Cabbage at the appropriate location.
+				y_start, so as to be able to create the Cabbage at the appropriate location.
+				world, so as to be able to call public member function in StudentWorld.
+		virtual ~Cabbage();
+			This function is the destructor for Cabbage; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething();
+			This function performs the actions and checks of a Cabbage during a given tick, including checking if it is offscreen, moving the projectile, and rotating it. It is virtual as it is derived from the base class Projectile.
+		virtual int getIID();
+			This function returns the imageID of Cabbage, being IID_CABBAGE. It is virtual as it is derived from the base class Projectile.
+			
+	Turnip:
+		Turnip(double x_start, double y_start, StudentWorld* world);
+			This function is the constructor for Turnip, one of the three Projectile types. It is derived from Projectile, and in its arguments I chose to include:
+				x_start, so as to be able to create the Turnip at the appropriate location.
+				y_start, so as to be able to create the Turnip at the appropriate location.
+				world, so as to be able to call public member function in StudentWorld.
+		virtual ~Turnip();
+			This function is the destructor for Turnip; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething();
+			This function performs the actions and checks of a Turnip during a given tick, including checking if it is offscreen, moving the projectile, and rotating it. It is virtual as it is derived from the base class Projectile.
+		virtual int getIID();
+			This function returns the imageID of Turnip, being IID_TURNIP. It is virtual as it is derived from the base class Projectile.
+			
+	FlatulanTorpedo:
+		FlatulanTorpedo(double x_start, double y_start, int direction, StudentWorld* world);
+			This function is the constructor for FlatulanTorpedo, one of the three Projectile types. It is derived from Projectile, and in its arguments I chose to include:
+				x_start, so as to be able to create the FlatulanTorpedo at the appropriate location.
+				y_start, so as to be able to create the FlatulanTorpedo at the appropriate location.
+				direction, so as to be able to differentiate between a FlatulanTorpedo fired by the player and by a Snagglegon
+				world, so as to be able to call public member function in StudentWorld.
+		virtual ~FlatulanTorpedo();
+			This function is the destructor for FlatulanTorpedo; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething();
+			This function performs the actions and checks of a FlatulanTorpedo during a given tick, including checking its direction, checking if it is offscreen, and moving the projectile in the correct direction. It is virtual as it is derived from the base class Projectile.
+		virtual int getIID();
+			This function returns the imageID of FlatulanTorpedo, being IID_TORPEDO. It is virtual as it is derived from the base class Projectile.
+			
+	ExtraLifeGoodie:
+		ExtraLifeGoodie(double x_start, double y_start, StudentWorld* world);
+			This function is the constructor for ExtraLifeGoodie, one of the three Drop types. It is derived from Drop, and in its arguments I chose to include:
+				x_start, so as to be able to create the ExtraLifeGoodie at the appropriate location.
+				y_start, so as to be able to create the ExtraLifeGoodie at the appropriate location.
+				world, so as to be able to call public member function in StudentWorld.
+		virtual ~ExtraLifeGoodie();
+			This function is the destructor for ExtraLifeGoodie; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual int getIID();
+			This function returns the imageID of ExtraLifeGoodie, being IID_LIFE_GOODIE. It is virtual as it is derived from the base class Drop.
+			
+	RepairGoodie:
+		RepairGoodie(double x_start, double y_start, StudentWorld* world);
+			This function is the constructor for RepairGoodie, one of the three Drop types. It is derived from Drop, and in its arguments I chose to include:
+				x_start, so as to be able to create the RepairGoodie at the appropriate location.
+				y_start, so as to be able to create the RepairGoodie at the appropriate location.
+				world, so as to be able to call public member function in StudentWorld.
+		virtual ~RepairGoodie();
+			This function is the destructor for RepairGoodie; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual int getIID();
+			This function returns the imageID of RepairGoodie, being IID_REPAIR_GOODIE. It is virtual as it is derived from the base class Drop.
+			
+	TorpedoGoodie:
+		TorpedoGoodie(double x_start, double y_start, StudentWorld* world);
+			This function is the constructor for TorpedoGoodie, one of the three Drop types. It is derived from Drop, and in its arguments I chose to include:
+				x_start, so as to be able to create the TorpedoGoodie at the appropriate location.
+				y_start, so as to be able to create the TorpedoGoodie at the appropriate location.
+				world, so as to be able to call public member function in StudentWorld.
+		virtual ~TorpedoGoodie();
+			This function is the destructor for TorpedoGoodie; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual int getIID();
+			This function returns the imageID of TorpedoGoodie, being IID_TORPEDO_GOODIE. It is virtual as it is derived from the base class Drop.
+			
+	NachenBlaster:
+		NachenBlaster(StudentWorld* world);
+				This function is the constructor for NachenBlaster, the class representing the player. It is derived from Actor, and in its arguments I chose to include:
+					world, so as to be able to call public member functions in StudentWorld
+		virtual ~NachenBlaster();
+			This function is the destructor for NachenBlaster; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething();
+			This function performs the actions and checks of a NachenBlaster during a given tick, including checking for if it is dead, taking input from the player, preventing the player from moving offscreen, and shooting a Cabbage or Torpedo projectile if it is possible. The function is virtual as it is derived from the base class Actor.
+		virtual int getIID();
+			This function returns the imageID of NachenBlaster, being IID_NACHENBLASTER. It is virtual as it is derived from the base class Actor.
+		virtual bool takeDamage(int type);
+			This function causes the player to suffer damage in a specific manner depending on damage type. It is virtual as it is derived from the base class Actor, and has undergone polymorphism to account for the ways a player can suffer damage. It also accounts for the goodie drop effects on the player as well, with those collisions always returning false (a player cannot die from picking up a goodie drop).
+		int getHealth();
+			This function returns the health of the player, called by StudentWorld. It is not virtual as the need to return health unique only to this class.
+		int getCabbageEnergy();
+			This function returns the cabbage energy of the player, called by StudentWorld. It is not virtual as the need to return cabbage energy unique only to this class.
+		int getTorpedoCount();
+			This function returns the torpedo count of the player, called by StudentWorld. It is not virtual as the need to return torpedo count is unique only to this class.
+		double getPlayerX();
+			This function returns the position of the player, called by StudentWorld. It is not virtual as the need to return position unique only to this class.
+		double getPlayerY();
+			This function returns the position of the player, called by StudentWorld. It is not virtual as the need to return position unique only to this class.
+			
+	Star:
+		Star(int x_min, int x_max, int y_min, int y_max, StudentWorld* world);
+			This function is the constructor for Star, the class representing the background stars. It is derived from Actor, and in its arguments I chose to include:
+					x_min, so as to be able to determine the valid spawn area of the star(different for stars created at beginning of a level and during a level).
+					x_max, so as to be able to determine the valid spawn area of the star(different for stars created at beginning of a level and during a level).
+					y_min, so as to be able to determine the valid spawn area of the star(different for stars created at beginning of a level and during a level).
+					y_max, so as to be able to determine the valid spawn area of the star(different for stars created at beginning of a level and during a level).
+					world, so as to be able to call public member functions in StudentWorld
+		virtual ~Star();
+			This function is the destructor for Star; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething();
+			This function performs the actions and checks of a Star during a given tick: moving the star to the left and checking if it is offscreen.
+		virtual int getIID();
+			This function returns the imageID of Star, being IID_STAR. It is virtual as it is derived from the base class Actor.
+			
+	Explosion:
+		Explosion(double x, double y, StudentWorld* world);
+			This function is the constructor for Explosion. It is derived from Actor, and in its arguments I chose to include:
+					x, so as to be able to determine the location to spawn the Explosion.
+					y, so as to be able to determine the location to spawn the Explosion.
+					world, so as to be able to call public member functions in StudentWorld
+		virtual ~Explosion();
+			This function is the destructor for Explosion; it is virtual as there will be derived classes. By having the destructor be virtual, the derived objects will be destroyed, and then the base class. If the destructor were not virtual, only the base class object will be deleted, creating a memory leak.
+		virtual void doSomething();
+			This function performs the actions and checks of an Explosion during a given tick: expanding the Explosion and checking how many ticks it has been expanding for: if greater than or equal to 4, delete.
+		virtual int getIID();
+			This function returns the imageID of Explosion, being IID_EXPLOSION. It is virtual as it is derived from the base class Actor.
+			
+Here are the public member functions of the StudentWorld.h class:
+
+	StudentWorld:
+		StudentWorld(std::string assetDir);
+			This function is the constructor for StudentWorld; it initializes the pointer m_player to nullptr.
+		~StudentWorld();
+			This function is the destructor for StudentWorld; it calls the cleanUp() function.
+		virtual int init();
+			This function initializes the opening state of the game per level: it determines maximum number of aliens onscreen, number of aliens per round, sets the pointer m_player to point at the the NachenBlaster representing the player, and creates the background of Stars. It is virtual as it is derived from the GameWorld class.
+		virtual int move();
+			This function is responsible for a single tick: it sets the text at the top of the screen, spawns in up to a single Alien depending on conditions, checks for collisions between all valid actors, permits the player to perform an action if alive, animates all other actors, removes dead actors, checks for collision again, removes all dead actors again, adds stars as necessary to the right hand side of the screen, and checks if the player has completed the level. It is virtual as it is derived from the GameWorld class.
+		virtual void cleanUp();
+			This function iterates through all the Actors in the vector that stores the Actors and deletes them. It then deletes the NachenBlaster pointed to by m_player. It is virtual as it is derived from the GameWorld class.
+		void addActor(Actor* element);
+			This function adds an actor to the vector storing all Actors. It is not virtual is it is a helper function for StudentWorld.
+		void checkCollision();
+			This function iterates through the vector storing all the Actors and checks for valid collisions between the actors. It is not virtual as it is a helper function for StudentWorld.
+		void endGame();
+			This function decrements the lives until it reaches 0, effectively ending the game. It is used by Actor.cpp to end the game. It is not virtual as it is a helper function for StudentWorld.
+		double distance(double x1, double y1, double x2, double y2);
+			This function checks for whether the distance between two Actors is short enough for a collision to occur. It is not virtual as it is a helper function for StudentWorld.
+		NachenBlaster* getPlayer();
+			This function returns the NachenBlaster pointed to by m_player. It is primarily used by Actor.cpp. It is not virtual as it is a helper function for StudentWorld.
+			
+2. N/A.
+
+3. Some assumptions I made are as follows:
+		As the specification did not specify as to prioritize a collision between the NachenBlaster and an Alien over a collision between the NachenBlaster and a Turnip/FlatulanTorpedo or a collision between an Alien over a Cabbage/FlatulanTorpedo, etc., I implemented the hierarchy as follows:
+			Cabbage and Alien > Turnip and NachenBlaster > FlatulanTorpedo and Alien > FlatulanTorpedo and NachenBlaster > NachenBlaster and Alien > NachenBlaster and Goodie Drop.
+			
+		The specification did not specify if a collision between the final Alien and the NachenBlaster were to occur and both were to be destroyed, if the round should complete or fail. Consequently, I implemented the game as in that scenario, the round would fail and the player would have to replay the level.
+		
+		The specification did not specify if the player were to be killed whether to play SOUND_DEATH. Consequently, I implemented the game such that if the player were to be killed, no special sound would play (if the player were killed by a projectile, the game would only play SOUND_BLAST, per usual, and if the player were to be killed by a collision, the game would only play SOUND_DEATH for the Alien ship, not the player's as well).
+		
+		The specification did not specify if the player could simultaneously move and shoot. Consequently, I implemented the game such that only one of the two could be done in a given tick, not both.
+		
+		The specification did not specify if torpedoes carry over from one level to another. Consequently, I implemented the game such that the player starts with 0 torpedoes every round.
+		
+		The specification did not specify if the aliens are to shoot the player if the player's x position is < or <= to the alien's x position. Consequently, I implemented the game such that the aliens attempt to shoot the player if the player's x is < than the alien's x position.
+		
+4. The tests for the classes that I made are as follows:
+
+	class Actor: public GraphObject
+		To test the nonvirtual functions that are universal across all other classes, specifically isAlive() as it is core for deleting actors in StudentWorld and preventing memory leaks, I entered debugging mode of Visual Studio 2017 and set breakpoints every time the fuction was called in StudentWorld.cpp, checking that the function returned the correct value and consequently if the isAlive() returned false, that the associated actor was actually cleaned up and deleted by cleanUp() in StudentWorld.cpp. setAlive() and setDead() were tested in a similar manner, and if getWorld() did not function properly, it would be obvious in later parts of the code where it was referenced, such as in the doSomething() function of NachenBlaster.
+		
+	class Alien: public Actor
+		To test the nonvirtual functions that are universal across the other Alien subclasses, I first tested the movement related functions by implementing them for the subclasses. I then added the three alien types to the game and ran it, checking to see if the aliens moved as expected: the Smallgons moving randomly upwards and downwards whilst staying within the screen, the Smoregons doing the same with occasionally attempting to ram the player, and the Snagglegons always starting downwards and to the left before reaching the bottom and moving upwards and to the left until it hit the top, and back downwards, etc. To check that getLevel(), and consequently the health of the aliens was correct, I loaded the provided game to see how many shots it took to kill an alien and compared it with the number of shots required by my game.
+		
+	class Projectile : public Actor
+		As all the functions in Projectile are either virtual with polymorphism or pure virtual, I tested them separately within the three individual projectile subclasses. See below.
+		
+	class Drop : public Actor
+		To test doSomething(), I compared the drop speed of the goodies dropped by my program in comparison to that of the game provided by the CS32 website.
+		
+	class Smallgon : public Alien
+		To test the constructor of Smallgon, and specifically the health of a Smallgon, I loaded the provided game to see how many shots it took to kill an alien and compared it with the number of shots required by my game. To test doSomething(), I ensured that in my game the Smallgons moved similarly to the provided game: randomly upwards and downwards whilst staying within the bounds of the screen, occasionally attempting to shoot the player if possible. If getIID() were to not work as intended, it would be quickly obvious as many related functions in StudentWorld.cpp would not work as intended.
+		
+	class Smoregon : public Alien
+		To test the constructor of Smoregon, and specifically the health of a Smoregon, I loaded the provided game to see how many shots it took to kill an alien and compared it with the number of shots required by my game. To test doSomething(), I ensured that in my game the Smoregons moved similarly to the provided game: randomly upwards and downwards whilst staying within the bounds of the screen, occasionally attempting to ram or shoot the player if possible. If getIID() were to not work as intended, it would be quickly obvious as many related functions in StudentWorld.cpp would not work as intended.
+		
+	class Snagglegon : public Alien
+		To test the constructor of Snagglegon, and specifically the health of a Snagglegon, I loaded the provided game to see how many shots it took to kill an alien and compared it with the number of shots required by my game. To test doSomething(), I ensured that in my game the Snagglegons moved similarly to the provided game: consistently starting downwards until reaching the bottom, moving upwards until reaching the top, and back downwards, occasionally attempting to shoot the player if possible. If getIID() were to not work as intended, it would be quickly obvious as many related functions in StudentWorld.cpp would not work as intended.
+		
+	class Cabbage : public Projectile
+		To test that the Cabbages were properly marked as dead when they collided or moved off screen, I set the all ships to invincible and continued shooting for an extended period of time, seeing if the game slowed down/crashed as which would be the case in the event of a memory leak. I also compared the speed and rotation of the cabbages to that of the provided game to ensure they were correct.
+		
+	class Turnip : public Projectile
+		To test that the Turnips were properly marked as dead when they collided or moved off screen, I set the ships to continually shoot the player and made the player invincible for an extended period of time, seeing if the game slowed down/crashed as which would be the case in the event of a memory leak. I also compared the speed and rotation of the turnips to that of the provided game to ensure they were correct.
+		
+	class FlatulanTorpedo : public Projectile
+		To test that the FlatulanTorpedoes were properly marked as dead when they moved offscreen, I gave the player an infinite number of torpedoes and continued shooting for an extended period of time, seeing if the game slowed down or crashed which would be the case in the event of a memory leak. I also compared the speed and direction of the sprites with that of the provided game.
+		
+	class ExtraLifeGoodie : public Drop
+		To test the ExtraLifeGoodie, I implemented the collision of the ExtraLifeGoodie with the NachenBlaster and ensured it gave the player an additional life as expected, which was reflected in the stats bar at the top of the screen.
+	
+	class RepairGoodie : public Drop
+		To test the RepairGoodie, I implemented the collision of the RepairGoodie with the NachenBlaster and ensured it gave the player health back as expected, not exceeding a total of 50 health or 100%, which was reflected in the stats bar at the top of the screen.
+		
+	class TorpedoGoodie : public Drop
+		To test the TorpedoGoodie, I implemented the collision of the TorpedoGoodie with the NachenBlaster and ensured it gave the player five additional Torpedoes expected, which was reflected in the stats bar at the top of the screen.
+		
+	class NachenBlaster : public Actor
+		To test takeDamage(), I played the game and ensured the player lost the appropriate amount of health per damage that was incurred per collision (4% per turnip, 16% per torpedo, 10% per crash, etc).
+		To test doSomething(), I played the game, ensuring I could not move offscreen, that my cabbageCount would decrement, that I could only shoot torpedoes if I had any, that pressing q would quit the game, etc.
+		The various related helper functions are called upon many times by StudentWorld.cpp, if they were to not work as intended, it would become quickly evident.
+		
+	class Star : public Actor
+		To test the constructor and doSomething(), I played the game and let it run, ensuring that over time the "dead" offscreen stars would be removed and prevent a memory leak, and that new stars would continually spawn in.
+		
+	class Explosion : public Actor
+		To test the constructor and doSomething(), I played the game and destroyed as many ships as possible, creating Explosions and ensuring that there wasn't a memory leak. I also observed each explosion, making sure they expanded in size until they were removed by the framework of the game.
+		
+	 class StudentWorld : public GameWorld
+		To test init(), I ran the game without putting a valid return statement within move(), causing the game to freeze in the first frame. I then counted the number of stars, ensuring that there were 30 and observed that the NachenBlaster was placed in the center left of the screen. I then tested addActor(Actor* element) by shooting as many cabbages as possible, ensuring that the vector iterator remained incrementable throughout the various creation and deletion of cabbage actors. I tested checkCollision() by playing the game and ensuring all the interactions were correct: that the number of aliens that were counted as killed incremented by 1 regardless of collision with the NachenBlaster or with a projectile, that the player could pick up projectiles, that the FlatulanTorpedoes from the aliens could not hit other aliens but only the player, that the cabbages would collide will all alien types, that the correct amount of damage was dealt, etc. distance(double x1, double y1, double x2, double y2) was tested along with the checkCollision() function in a similar manner. The spawning of aliens and the correct incrementation of rounds was checked by changing the output of the stats line to various values associated with the spawning of aliens, such as number of aliens left in the round, number killed, number onscreen, maximum number permitted onscreen, etc. The successful removal of dead actors was tested via the fact that aliens/the player did not take double damage from various sources, that runtime errors were not encountered, etc. cleanUp() was tested by setting breakpoints within the loop that deleted the individual actors within the vector, and ensuring that each space was freed as the actors were deleted. endGame() was tested by implementing KEY_PRESS_ESCAPE in NachenBlaster and observing that the game would end when 'q' was pressed. The correct implementation getPlayer() was tested by the fact that the Alien classes in Actor.cpp which called getPlayer() shot at the player when the player was in the correct relative position to the aliens.

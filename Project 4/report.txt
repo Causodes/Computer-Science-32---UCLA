@@ -1,0 +1,284 @@
+2.
+class MyHash:
+
+	MyHash(double maxLoadFactor = 0.5)
+		// Constructor for MyHash
+		initializes an array of Node pointers with a maximum capacity of [m_capacity]
+		sets each element of the array to nullptr
+		checks for viable maxLoadFactor
+		
+	~MyHash()
+		// Destructor for MyHash
+		Iterates through every array index
+			While the index is not nullptr
+				set temp Node pointer to point at Node at index
+				set index Node to the next pointer of the index Node
+				delete the temp Node
+			set the table index to nullptr
+		delete [] table
+		
+	void reset()
+		// Clears current table and sets it to default state
+		Iterates through every array index
+			While the index is not nullptr
+				set temp Node pointer to point at Node at index
+				set index Node to the next pointer of the index Node
+				delete the temp Node
+			set the table index to nullptr
+		delete [] table
+		Reset private member variables to default state
+		initializes an array of Node pointers with a maximum capacity of [m_capacity]
+		sets each element of the array to nullptr
+		
+	void associate(const KeyType& key, const ValueType& value)
+		// Adds new element to hashtable
+		create pointer to a ValueType and attempt to find key in current hashtable // pointer will be set to value relating to key
+		if pointer is not equal to nullptr
+			update value of associated key with argument variables
+		else	
+			create unsigned int bucket equal to hash of key
+			bucket is equal to mod bucket by hashtable capacity
+			create a new Node with argument parameters and a next pointer pointing to the Node current occupying the bucket in the array
+			set the bucket of the array equal to the new Node pointer
+			increment number of items
+			
+		if loadfactor is larger than maximumloadfactor
+			create a temporary table with double the capacity of the current table
+			initialize the temporary table to all buckets with nullptr
+			
+			iterate through old table
+				set a Node to the node in the current bucket in the table
+				if the Node is not nullptr
+					Hash the node based on key and mod hash value by the new table capacity
+					Create a temporary Node with identical parameteres to current Node
+					add temporary node to new table
+					set current Node to its next pointer
+			delete old table
+			set table to the new table
+			double capacity variables
+			
+	int getNumItems()
+		returns private member variable dictating number of items
+	
+	double getLoadFactor() const
+		returns number of items divided by capacity
+		
+	const ValueType* find(const KeyType& key) const
+		// returns pointer to value of associated key
+		hash key and find bucket
+		go to bucket in table and set Node equal to head node
+		while Node does not equal nullptr
+			if the key matches argument
+				return associated value
+			else
+				traverse to next node
+		return nullptr
+		
+class TokenizerImpl:
+
+	TokenizerImpl::TokenizerImpl(string separators)
+		initialize private member variable equal to argument
+	
+	vector<string> TokenizerImpl::tokenize(const std::string& s) const
+		// Tokenizes string based on list of seperators passed in during construction
+		create empty vector
+		create empty tmp string
+		iterate through the argument string
+			set a flag variable to true
+			iterate through the seperators string
+				if a seperator matches the current character of the argument string
+					set flag to false
+					if tmp string is not empty
+						add string to vector
+					set tmp to empty
+			if flag is true
+				tmp is equal to tmp plus current character
+		// Check to push in last word
+		if tmp is not empty
+			push tmp to vector
+		return vector
+		
+class WordListImpl:
+
+	bool WordListImpl::loadWordList(string filename)
+		// Populates a hash table with data from a dictionary
+		Read in filename data
+		If not successful
+			return false
+		
+		Initialize two hash tables // Call reset on them
+		Create a temp string and initialize a flag variable to true
+		
+		while able to read in lines from the txt filename
+			check for valid characters and convert to lowercase
+			if invalid character found set flag to false and break
+		
+			if flag is true 
+				associate str to first hash table // This stores all the valid words in the wordlist
+		
+			create an empty pattern string , create a character "code" initialized to 'a', and initialize an encoding array of 26 characters all to '0'
+		
+			iterate through current word pulled from the txt filename
+				if the character is alphabetical
+					int index is equal to lowercase of character - 'a'
+					if encoding array of index is equal to '0'
+						set the index to code
+						increment code
+					append encodingarray index to the pattern string
+		
+			attempt to find pattern string in second hash table // This stores all the patterns in the wordlist
+			
+			if the pattern cannot be found in the second hash table
+				create a vector of strings and push back the pattern string
+				associate the vector using the pattern string as the key and the vector as the value
+			else the pattern can be found
+				set a vector of strings equal to the the return of patternlist.find(pattern)
+				push back the pattern string in the vector
+				associate the vector using the pattern string as the key and the vector as the value
+		return true
+	
+	bool WordListImpl::contains(string word) const
+		if word cannot be found in wordlist
+			return false
+		else
+			return true
+	
+	vector<string> WordListImpl::findCandidates(string cipherWord, string currTranslation) const
+		if argument lengths don't match
+			return empty vector
+			
+		encode cipherword to same pattern encoding used to populate the second hash table in loadWordList
+		set a const vector<string> equal to patternList.find(pattern) // patternList stores all the words with related patterns, key being the pattern. pattern is the pattern that cipherword is encoded to 
+		
+		iterate through the newly populated vector of strings
+			set a flag to true
+			iterate through currTranslation
+			if a nonquestion mark character of currTranslation is not alphabetical and does not match the corresponding character in the current string from the vector of strings
+				set flag to false and break
+		if flag is false
+			break
+		
+		else
+			push_back current string into return vector
+		return final vector
+		
+class TranslatorImpl:
+
+	TranslatorImpl::TranslatorImpl()
+		initialize alreadymapped = new vector<string>
+		initialize currentmapping = new vector<string>
+		
+	TranslatorImpl::~TranslatorImpl()
+		iterate through alreadymapped
+			delete current element
+			increment iterator
+			
+		clear alreadymapped
+		delete alreadymapped
+		
+		iterate through currentmapping
+			delete current element
+			increment iterator
+			
+		clear currentmapping
+		delete currentmapping
+	
+	TranslatorImpl::pushMapping(string ciphertext, string plaintext)
+		if the arguments differ in lengths
+			return false
+		if the two vectors storing mappings are empty
+			set mapping 1 and 2 to a string of 26 ?
+		else
+			set mapping 1 and mapping 2 to the back elements of alreadymapped and currentmapping, respectively
+			
+		iterate through ciphertext
+			set index1 to lowecase of plaintext minus 'a'
+			set index2 to lowercase of ciphertext minus 'a'
+			
+			if either ciphertext character or plaintext character are not alphabetical
+				return false
+			if mapping1[index2] does not equal plaintext[i] and that index does not equal '?'
+				return false // collision
+			if mapping2[index1] does not equal ciphertext[i] and that index does not equal '?'
+				return false // collision
+			set mapping1[index2] equal to plaintext[i]
+			set mapping2[index1] equal to ciphertext[i]
+			
+		push_back mapping1 to alreadymapped
+		push_back mapping2 to currentmapping
+		
+		return true
+	
+	TranslatorImpl::popMapping()
+		if either mapping table is empty
+			return false;
+		else
+			pop back of each mapping table
+	
+	string TranslatorImpl::getTranslation(const string& ciphertext) const
+		if vectors storing mappings are empty
+			translationKey set to default // 26 '?'
+		else
+			translationKey set to most recent mapping in alreadymapped
+		initialize an empty translation string
+		
+		iterate through ciphertext
+			if ciphertext[i] is not alphabetical
+				append ciphertext[i] to the end of translation
+			else
+				set index equal to ciphertext[i] - 'A'
+				set char equal to translationKey[index]
+				append char to end of translation
+		return translation
+			
+class DecrypterImpl:
+
+	bool DecrypterImpl::load(string filename)
+		if WordList.loadWordList(filename) fails
+			return false
+		else 
+			return true
+	
+	void DecrypterImpl::helper(string& input, string& previous, vector<string>& result)
+		// Private member function primarily used to recursively decrypt message
+		// input is ciphertext, previous is previous translation, result is vector containing possible translations
+		
+		tokenize input and previous and populate two vectors, wordList and partDecrypt, with them
+		
+		iterate through partDecrypt, looking for the word with the most '?'
+			mark location in list
+		traverse to same location in wordList, retrieving word
+		
+		Using current mapping, get a translation for the retrieved word
+		
+		set a vector of strings equal to findCandidates(word, translated word)
+		
+		if that vector is empty
+			pop current mapping and return
+			
+		Otherwise iterate through vector of potential strings
+			if pushMapping(word, candidate) does not return false // Candidate is a string from vector of potential strings
+			
+			getTranslation of entire input using current mapping
+			
+			tokenize entire translated message
+			if a fully translated word is not found in the dictionary
+				pop current mapping
+			if all fully translated words are found in the dictionary but message is not fully translated
+				recursively call helper(input, current translation, result)
+			if message is fully translated
+				add message to result
+				pop current mapping
+		pop current mapping
+				
+	vector<string> DecrypterImpl::crack(const string& ciphertext)
+		set a string equal to getTranslation of ciphertext
+		create an empty vector of strings to store results
+		
+		call helper(ciphertext, translation, vector)
+		return vector
+
+3.	All methods with the exception of WordListImpl::loadWordList(string filename) satisfy the big-O requirements.
+
+	The big-O requirement for WordListImpl::loadWordList(string filename) states that the method must run in O(W) time, W being the number of unique words in the file. While the majority of the function does run in O(W) time, it must also first reset the hash tables. The reset function runs in O(B) time, B being the number of buckets in each hash table. Since constants do not matter, the overall big-O of the method comes out to be O(W + B), which is rather ambiguous as to whether it satisfies the big-O requirements of the method.
+	

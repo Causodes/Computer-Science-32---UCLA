@@ -1,0 +1,267 @@
+1. Description of Doubly Linked List:
+	Contains a tail and head pointer, with the first node of the linked list being defined as *head and the last node of the linked list defined as *tail. head->previous points to nullptr, defining it as the first element of the linked list, and tail->next points to nullptr, defining it as the last element of the linked list. Each node contains the struct m_pair, which contains a KeyType and a ValueType, per the user definition in Map.h. For all nodes other than the exceptions listed above, previous is a pointer that points to the previous node and next is a pointer that points to the next node.
+	
+2. Pseudocode for non-trivial algorithms:
+	Map::~Map() // Destructor
+	{
+		set temporary node to head
+		
+		while temporary node is not nullptr:
+		{
+			set a second node to temporary's next node
+			delete temporary
+			set temporary to the next node
+		}
+	}
+	
+	Map::Map(const Map &src) // Copy Constructor
+	{
+		construct new linked list
+		
+		repeatedly:
+		{
+			retrieve source data information
+			insert data to new linked list
+			traverse source
+		}
+	}
+	
+	Map& Map::operator = (const Map &src) // Assignment Operator
+	{
+		aliasing check
+		
+		delete existing linked list
+		create new linked list
+		
+		repeatedly:
+		{
+			retrieve source data information
+			insert data to new linked list
+			traverse source
+		}
+	}
+	
+	bool Map::get(const KeyType& key, ValueType& value) const // Change value to ValueType associated with key
+	{
+		repeatedly:
+		{
+			if current node key is same as passed key value
+			{
+				set value to value associated with key
+				break
+			}
+			traverse linked list
+		}
+	}
+	
+	bool Map::get(int i, KeyType& key, ValueType& value) const // Set key and value to data associated with ith element
+	{
+		if valid i 
+		{
+			repeatedly while not at ith element:
+			{
+				traverse linked list
+			}
+			change key to ith element key
+			change value to ith element value
+		}
+	}
+	
+	bool Map::contains(const KeyType &key) const // Check for node with matching key
+	{
+		repeatedly:
+		{
+			if key of node matches
+				break
+			traverse linked list
+		}
+	}
+	
+	bool Map::insert(const KeyType& key, const ValueType& value) // Insert node to end of linked list
+	{
+		if key is already in list
+		{
+			break
+		}
+		else if list is empty
+		{
+			create new node with passed data
+			
+			set head to new node
+			set tail to new node
+			set head next pointer to nullptr
+			set tail next pointer to nullptr
+			
+			set m_size to 1
+		}
+		else // General Case
+		{
+			create new node with passed data
+			
+			set tail next pointer to new node
+			set new node previous pointer to tail
+			set new node next pointer to nullptr
+			set tail as new node
+			
+			increment m_size
+		}
+	}
+	
+	bool Map::update(const KeyType& key, const ValueType& value) // Update existing key with value
+	{
+		repeatedly:
+		{
+			if key of node matches
+				change value of node
+			traverse linked list
+		}
+	}
+	
+	bool Map::insertOrUpdate(const KeyType& key, const ValueType& value) // Update, if not found, insert
+	{
+		if update succeeds
+			break
+		else if insert succeeds
+			break
+		else
+			return false
+	}
+	
+	bool Map::erase(const KeyType& key) // Delete node with associated key
+	{
+		if m_size is 1
+		{
+			delete head
+			set head to nullptr
+			set tail to nullptr
+			set m_size to 0
+		}
+		
+		repeatedly:
+		{
+			if key of node matches
+			{
+				if node is head
+				{
+					set temp node to head
+					new head is temp node next pointer
+					delete temp node
+				}
+				else if node is tail
+				{
+					set temp node to tail
+					new tail is temp node previous pointer
+					delete temp node
+				}
+				else
+				{
+					set temp1 node to current
+					set temp2 node to current previous pointer
+					set temp2 next pointer to temp1 next pointer
+					delete temp1 node
+				}
+				decrement m_size
+			}
+			traverse linked list
+		}
+	}
+	
+	void Map::swap(Map& other) // Swaps contents of maps
+	{
+		set temp map to other
+		set other to original map
+		set original map to temp map
+	}
+	
+	bool combine(const Map& m1, const Map& m2, Map& result) // Combine maps, delete duplicates with different values
+	{
+		set result to m1
+		set temp map to m2
+		
+		create flag variable for fail
+		
+		repeatedly:
+		{
+			get key and value for element in temp map
+			
+			if result does not contain key
+			{
+				insert key and value to result
+			}
+			else // if result does contain key
+			{
+				if value from corresponding key in result does not match value from temp map
+				{
+					set flag variable to fail
+					erase node with corresponding key from result
+				}
+			}
+			traverse m2 linked list
+		}
+		
+		if flag variable is fail
+			return false
+		else
+			return true
+	}
+	
+	void subtract(const Map& m1, const Map& m2, Map& result) // Elements in m1, but not in m2
+	{
+		set result to empty map
+		
+		repeatedly:
+		{
+			get key and value for element in m1
+			if m2 does not contain key
+			{
+				insert key and value to result
+			}
+			traverse m1 linked list
+		}
+	}
+	
+3. List of Test Cases:
+	Map map1;
+	assert(map1.empty());					// empty map
+	assert(map1.insert("A", 1));			// map A, test edge case of map with only 1 entry
+	assert(map1.insert("B", 2));			// map AB, general case test of map
+	assert(map1.insertOrUpdate("C", 3));	// map ABC, test insert function of insertOrUpdate
+	assert(map1.insertOrUpdate("C", 3.1));	// change 3 to 3.1, C previously pointed to 3
+	assert(!map1.empty());					// map not empty
+	assert(!map1.contains("D"));			// map does not have D
+	assert(map1.erase("C"));				// map AB
+	assert(map1.size() == 2);				// map size 2
+
+	Map map2(map1);							// map2 AB
+	assert(map2.update("A", 2));			// map2 AB		// A is 2
+	assert(map2.update("B", 4));			// map2 AB		// B is 4
+	Map map3 = map1;						// map3 12
+	map3 = map2;							// map3 24
+	map3 = map3;							// should not fail
+	assert(map3.erase("B"));				// map3 A
+	assert(!map3.erase("B"));				// should return false
+	map3.swap(map1);						// map A(2), map3 A(1)B(2)
+	assert(!map3.insert("A", 5));			// already has A, return false
+
+	Map map4;
+	Map map5;
+	Map map6;
+	assert(map4.insert("1", 1));			// map4 1
+	assert(map4.insert("2", 2));			// map4 12
+	assert(map4.insert("3", 3));			// map4 123
+	assert(map4.insert("4", 4));			// map4 1234
+
+	assert(map5.insert("1", 1));			// map5 1
+
+	subtract(map4, map5, map6);				// map4 1234, test subtract
+
+	assert(map6.contains("2"));				// map6 234
+	assert(map6.contains("3"));
+	assert(map6.contains("4"));
+	assert(!map6.contains("1"));
+
+	assert(map5.insert("5", 5));			// map5 15
+	assert(map5.insert("2", 2));			// map5 152
+
+	assert(combine(map4, map5, map6));		// map6 12345, test combine
+	assert(map6.contains("5"));				// map6 2345

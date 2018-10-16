@@ -1,0 +1,82 @@
+1.a.
+			50
+		20		60
+	10	   40		70
+	  15  30	 65		80
+	     25 36		  74
+	 
+b. 
+In-Order:   10 15 20 25 30 36 40 50 60 65 70 74 80
+Pre-Order:  50 20 10 15 40 30 25 36 60 70 65 80 74
+Post-Order: 10 15 25 36 30 40 20 65 74 80 70 60 50
+
+c.
+			50
+		15		60
+	10	   40		70
+	      25	 65		80
+	        36		  74
+			
+2.a.
+struct Node
+{
+	int m_data;
+	Node* parent;
+	Node* left;
+	Node* right;
+};
+
+b.
+insert(Node* insertion, Node* root)
+{
+	if root is nullptr
+		set root to insertion
+		set insertion parent to nullptr
+	else if root value is equal to insertion value
+		return
+	else if root value is greater than insertion value
+		if root left is nullptr
+			set root left to insertion and insertion parent to root
+		else
+			recursively call insert(insertion, root->left)
+	else if root value is less than insertion value
+		if root right is nullptr
+			set root right to insertion and insertion parent to root
+		else
+			recursively call insert(insertion, root->right)
+}
+
+3.a.
+			8
+		3		6
+	0	   2		4
+	
+b. 
+[8][3][6][0][2][4]
+
+c. 
+[6][3][4][0][2]
+
+4.a. 
+O(C+S)
+
+b.
+O(logC + S)
+
+c.
+O(logC + logS)
+
+d.
+O(logS)
+
+e.
+O(1)
+
+f.
+O(logC + S)
+
+g.
+O(SlogS)
+
+h.
+O(C*logS)
