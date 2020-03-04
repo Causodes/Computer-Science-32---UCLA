@@ -44,7 +44,7 @@ public:
 			(m_table)[i] = nullptr;
 	}
 
-    ~MyHash()
+   	~MyHash()
 	{
 		remove();
 	}
